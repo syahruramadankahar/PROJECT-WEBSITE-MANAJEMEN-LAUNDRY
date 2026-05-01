@@ -155,14 +155,16 @@ const PRICING = {
 };
 
 function calculateEstimation(weight) {
-  let baseDays = 1;
-  if (weight > 5) baseDays += 1;
+  const capacityPerDay = 5; // kg/hari
+  const days = Math.ceil(weight / capacityPerDay);
 
-  const days = Math.ceil(baseDays);
   const date = new Date();
   date.setDate(date.getDate() + days);
 
-  return { days, date: date.toISOString() };
+  return {
+    days,
+    date: date.toLocaleDateString("id-ID")
+  };
 }
 
 function generateInvoiceId() {
@@ -338,36 +340,79 @@ window.printReceipt = async function (id) {
   const printArea = document.getElementById("printArea");
   if (!printArea) return;
 
-  printArea.innerHTML = `
-        <div class="printable-receipt p-4 bg-white" style="display: block;">
-            <div class="text-center border-bottom pb-3 mb-3">
-                <h4 class="fw-bold mb-0">NYUCYGO LAUNDRY</h4>
-                <p class="small text-muted mb-0">Nyuci cepat, tanpa ribet</p>
-                <p class="small text-muted">Jl. Premium Wash No. 123, Jakarta</p>
-            </div>
-            <div class="mb-3">
-                <div class="d-flex justify-content-between small"><span>Invoice:</span> <strong>${t.id}</strong></div>
-                <div class="d-flex justify-content-between small"><span>Tanggal:</span> <span>${formatDateTime(t.createdAt)}</span></div>
-                <div class="d-flex justify-content-between small"><span>Estimasi Selesai:</span> <span>${formatDate(t.estimasi)}</span></div>
-                <div class="d-flex justify-content-between small"><span>Pelanggan:</span> <strong>${t.nama}</strong></div>
-            </div>
-            <table class="table table-sm table-borderless small mb-3">
-                <tr class="border-bottom"><th>Deskripsi</th><th class="text-end">Harga</th></tr>
-                <tr><td>${t.layanan} (${t.berat} ${t.layanan.includes("Bedcover") ? "Pcs" : "Kg"})</td>
-                <td class="text-end">${formatIDR(t.harga)}</td></tr>
-            </table>
-            <div class="border-top pt-2 mb-4">
-                <div class="d-flex justify-content-between fw-bold">
-                    <span>GRAND TOTAL</span>
-                    <span>${formatIDR(t.harga)}</span>
-                </div>
-            </div>
-            <div class="text-center small">
-                <p class="mt-4 mb-0 fw-bold">SIMPAN STRUK INI</p>
-                <p class="text-muted">Terima kasih telah menggunakan jasa kami</p>
-            </div>
+printArea.innerHTML = `
+<div class="printable-receipt" style="
+    width: 280px;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    color: #000;
+    margin: auto;
+    background: #fff;
+    padding: 12px;
+    border: 1px dashed #000;
+">
+
+    <div style="text-align:center; margin-bottom:10px;">
+        <img src="/logo2.png" class="mx-auto d-block" alt="Logo" style="
+            width: 60px;
+            height: auto;
+            margin-bottom: 6px;
+        ">
+        <h4 style="margin:0; font-weight:bold;">NYUCYGO LAUNDRY</h4>
+        <p style="margin:0;">Nyuci cepat, tanpa ribet</p>
+        <p style="margin:0;">Jl. Premium Wash No. 123, Jakarta</p>
+    </div>
+
+    <div style="border-top:1px dashed #000; margin:8px 0;"></div>
+
+    <div style="margin-bottom:10px;">
+        <div style="display:flex; justify-content:space-between;">
+            <span>Invoice</span><span>${t.id}</span>
         </div>
-    `;
+        <div style="display:flex; justify-content:space-between;">
+            <span>Tanggal</span><span>${formatDateTime(t.createdAt)}</span>
+        </div>
+        <div style="display:flex; justify-content:space-between;">
+            <span>Estimasi</span><span>${formatDate(t.estimasi)}</span>
+        </div>
+        <div style="display:flex; justify-content:space-between;">
+            <span>Pelanggan</span><span>${t.nama}</span>
+        </div>
+    </div>
+
+    <div style="border-top:1px dashed #000; margin:8px 0;"></div>
+
+    <table style="width:100%; font-size:12px; margin-bottom:10px;">
+        <tr>
+            <th style="text-align:left;">Item</th>
+            <th style="text-align:right;">Harga</th>
+        </tr>
+        <tr>
+            <td>
+                ${t.layanan} (${t.berat} ${t.layanan.includes("Bedcover") ? "Pcs" : "Kg"})
+            </td>
+            <td style="text-align:right;">
+                ${formatIDR(t.harga)}
+            </td>
+        </tr>
+    </table>
+
+    <div style="border-top:1px dashed #000; margin:8px 0;"></div>
+
+    <div style="display:flex; justify-content:space-between; font-weight:bold;">
+        <span>TOTAL</span>
+        <span>${formatIDR(t.harga)}</span>
+    </div>
+
+    <div style="border-top:1px dashed #000; margin:10px 0;"></div>
+
+    <div style="text-align:center;">
+        <p style="margin:0;">*** SIMPAN STRUK INI ***</p>
+        <p style="margin:0;">Terima kasih 🙏</p>
+    </div>
+
+</div>
+`;
   window.print();
   setTimeout(() => {
     printArea.innerHTML = "";
