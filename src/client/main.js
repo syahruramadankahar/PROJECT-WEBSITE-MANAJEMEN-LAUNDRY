@@ -163,7 +163,7 @@ function calculateEstimation(weight) {
 
   return {
     days,
-    date: date.toLocaleDateString("id-ID")
+    date: date.toLocaleDateString("id-ID"),
   };
 }
 
@@ -340,7 +340,7 @@ window.printReceipt = async function (id) {
   const printArea = document.getElementById("printArea");
   if (!printArea) return;
 
-printArea.innerHTML = `
+  printArea.innerHTML = `
 <div class="printable-receipt" style="
     width: 280px;
     font-family: 'Courier New', monospace;
@@ -353,7 +353,7 @@ printArea.innerHTML = `
 ">
 
     <div style="text-align:center; margin-bottom:10px;">
-        <img src="/logo2.png" class="mx-auto d-block" alt="Logo" style="
+        <img src="/logo2.png" class="mx-auto d-block" alt="Logo2" style="
             width: 60px;
             height: auto;
             margin-bottom: 6px;
@@ -413,6 +413,7 @@ printArea.innerHTML = `
 
 </div>
 `;
+
   window.print();
   setTimeout(() => {
     printArea.innerHTML = "";
